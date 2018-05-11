@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./vue2.js"></script>
+    <style lang="scss" coped>
+      .co{
+        color:red;
+        font-size:20px
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 动态绑定 v-bind:属性名 简写为:属性名 -->
+
+    <div id="app">
+      <!-- 动态生成的数据需要使用动态绑定 并且使用布尔值表示是否拥有该类-->
+      <p :class="{'co': true}">使用{}动态绑定类</p>
+
+      <!-- 使用`${参数的键}`动态绑定带参数,实际上是拼接字符串 -->
+      <a :href="`del.php?id=${id}`">删除</a>
+
+      <!-- 使用v-model双向数据绑定 -->
+      <input type="text" v-model="name">
+    </div>
+
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          id: 1,
+          name: 'jack'
+        }
+      })
+    </script>
+  </body>
+</html>

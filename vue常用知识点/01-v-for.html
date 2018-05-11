@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="./vue2.js"></script>
+  </head>
+  <body>
+<!-- vue中使用v-for遍历数组或对象时必须要添加:key="index"作为每一项数据的唯一标识-->
+
+    <div id="app">
+      <ul v-for="(item,index) in fruit" :key="index">
+        <li>{{item}}</li>
+      </ul>
+
+      <ul v-for="(val,key,index) in user" :key="index">
+        <li>{{val}}</li>
+      </ul>
+    </div>
+    <script>
+      var vm = new Vue({
+        el: '#app',
+        data: {
+          fruit: ["apple", "orange", "banana", "pear"],
+          user:{name: 'jack', age: 23, height: '180cm'}
+        }
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="./vue2.js"></script>
+  <link rel="stylesheet" href="./animate.css">
+</head>
+
+<body>
+  <div id="app">
+    <button @click="toggle">点击</button>
+    <!-- 
+      @before-enter 表示进入之前的钩子
+      @enter 表示进入之中的钩子
+      @after-enter 表示进入之后的钩子
+
+      @before-leave
+      @leave
+      @after-leave
+     -->
+    <transition
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @after-enter="afterEnter"
+
+      @before-leave="beforeLeave"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
+        <div v-if="isvisible">动画</div>
+    </transition>
+  </div>
+  <script>
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        isvisible: false
+      },
+      methods: {
+        toggle() {
+          this.isvisible = !this.isvisible
+        },
+        beforeEnter (el) {
+          console.log('beforeEnter');
+          el.style.paddingLeft = '100' + 'px'
+        },
+        // done函数在该阶段动画完成以后必须调用，不然就会出错
+        enter (el, done) {
+          console.log('enter');
+          var step = 1;
+          var timer = setInterval(() => {
+            el.style.paddingLeft = (100 - step) + 'px'
+            step++;
+            if (step === 100) {
+              clearInterval(timer)
+              done()
+            }
+          }, 5)
+        },
+        afterEnter (el) {
+          el.style.paddingLeft = '0' + 'px'
+          console.log('afterEnter')
+        },
+        beforeLeave (el) {
+          console.log('beforeLeave');
+        },
+        // done函数在该阶段动画完成以后必须调用，不然就会出错
+        leave (el, done) {
+          console.log('leave');
+          done()
+        },
+        afterLeave (el) {
+          console.log('afterLeave');
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>

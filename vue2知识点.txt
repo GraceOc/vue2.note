@@ -1,0 +1,133 @@
+
+(一)基础
+      1. 在vue中凡是以v-开头的都叫指令
+      2.v-text与插值表达式{{}}位置不同,v-text放在标签属性的位置<p v-text="name"></p>
+      3.动态绑定类需要用到对象,并添加布尔值表示是否拥有该类
+      4.v-for="(item,index) in arr" :key="index"遍历数组或对象时需要使用 :key="index"表示该项数据的唯一标识
+      5.通过操作数组长度和操作数组索引都不会引起视图更新,可通全局方法Vue.set(arr, index, newVal)或Array.protype.splice()操作视图更新
+      6.v-model=""双向数据绑定
+      7.在数据模型中使用数据需加上this. this指向vue实例 
+      8.使用v-cloak指令解决页面加载时闪一闪的问题 
+      9.v-if和v-show并配合布尔值来控制元素的显示与隐藏,区别是:v-if是操作display:none而v-show是设置display:none,当为false的时候v-if的元素标签不会生成,因此频繁操作时v-if更消耗性能,v-if 指令可以应用于template包装元素上，而v-show不支持template
+      10.涉及异步数据渲染时使用v-if,大量操作dom时使用v-show
+
+
+(二)要点
+      1.es6中函数的写法 fn(){}  等同于 function fn(){}
+
+      2.过滤器: 
+            // 创建过滤器通过Vue.filter()这个全局方法创建，它包含两个参数,一个是过滤器的名称，你可以随便取    
+            // 另一个是一个函数，在里面对你的数据进行处理. 注意这个函数有一个默认参数，它表示你过滤的数据
+
+  			Vue.filter('fitlerTime', function (val, seprator) {
+    				// val = new Date(val)
+
+   				 var y = val.getFullYear()
+   				 var m = val.getMonth() + 1
+   				 var d = val.getDate()
+   				 // 注意一定要把结果return回去
+    				return y + seprator + m + seprator + d
+ 			 })
+            //使用过滤器 {{time | 过滤器名(':')}} 括号内的参数对应seprator     |  管道符   将time通过管道流到过滤器(名)中进行过滤
+
+	    ...//过滤数组的方法 filter():
+			    var ages = [32, 33, 16, 40];
+   			    function isBigger30 (age) {
+     				 return age > 30
+   			       }
+   				 var newArr = ages.filter(isBigger30)
+
+
+      3.键盘事件: keydow.enter="事件名"  或 keydow.13="事件名"
+  
+      4.在vue中操作dom: (1)在标签中添加ref属性(2)在vue实例中通过$refs就能访问该元素
+
+               在标签中  <input type="text" ref="inputRef">
+               在vue实例中实现表单自动聚焦: this.$refs.inputRef.focus()   
+
+		
+      5.计算属性:computed:{ }  是一个函数但当属性使用,通过已有属性计算出新属性,当属性发生变化时,computed内对应该属性的函数会发生计算
+
+      6.computed和watch: 都能检测页面数据的变化,但watch会时刻监听数据,每次都会执行函数,但computed计算属性是基于它们的依赖进行缓存的,当其依赖未发生改变(数据不变),在多次访问时不会执行里面的函数,而会将之前的计算结果立即返回,但watch和methods每次都会执行函数,计算属性能提升性能
+  
+      7.全局方法或指令必须写在vue实例前
+
+
+      8.自定义指令(全局方法)
+	     
+	     Vue.directive('指令名称',{          //指令名为小写
+		  inserted(el,binding){ }        //el表示使用该指令的dom元素,binding是对象表示自定义指令信息,常用它的value属性,获取指令的值时使用
+		})
+             使用: v-指令名称              ///使用指令时+v
+
+
+      9.vue动画
+             样式   .slide-enter, .slide-leave-to { }   //进入/离开过渡的开始状态
+                    .slide-enter-to, .slide-leave { }    //定义进入（离开）过渡的结束状态
+		    .slide-enter-active, .slide-leave-active { transition:all 4s }   //定义过渡状态
+	     
+             在视图区   将需要添加动画的dom元素用<transition>包裹,并添加name属性作为类名的前缀使用				<transition name='slide'></transition>
+             
+       	     使用Vue的amimate动画库也能事现
+
+
+
+(三) axios
+    1.安装: $ npm i axiso
+    2.引入 <script src="">...
+    3.传参问题:  
+	 get请求:  axios.get('接口地址',{
+			     prams:{ID:123,name:"张三"}    ///通过prams传参
+			})
+
+         post请求:  axios.post('接口地址',{ID:123,name:"张三"})   //通过对象传参
+
+	 例:// 在函数中使用axios发请求
+            axios.get('http://157.122.54.189:9093/api/getprodlist')
+              // then里面跟一个成功回调函数
+              .then(function (response) {
+                // 响应回来的是一个对象，里面封装了很多属性，但是我们只需要里面的data
+                console.log(response.data);
+              })
+              // catch中跟一个失败回调函数
+              .catch(function (error) {
+                console.log(error);
+              });
+
+				
+(四) 创建组件    组件创建在vue实例之前
+
+	  1. 通过Vue.extend()和Vue.component()方法创建
+		var Hello = Vue.extend({         //Vue.extend()方法返回一个构造函数Hello
+		   template:'<div>你好</div>'    //template放内容
+		})
+                
+    		Vue.component('GoodStudy',Hello)    //利用Hello构造函数创建组件实例,GoodStudy组件名
+                在视图区内使用组件名标签  <good-study>    //注意(规范): 在创建过程中构造函数和组件名使用首字母大写和驼峰,在视图中使用全小写并用-代替驼峰
+
+          2. 直接通过Vue.component()方法创建
+		Vue.component("组件名",{
+		    template:'<span>第二种</span>'
+		})
+	     使用: 在视图区内使用组件名标签
+ 
+          3. 通过模板创建 当内容多的时候更方便 
+		Vue.component('组件名',{
+		    template:'模板id'
+		})
+             使用:  在视图外根据模板id写模板  <template id="模板id">内容</template>
+     		    并在视图区内使用组件标签
+
+
+
+
+
+
+
+
+
+
+
+
+
+

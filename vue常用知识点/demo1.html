@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      #app{
+          width:600px;
+              margin:10px auto;
+      }
+        .tb{
+            border-collapse:collapse;
+            width: 100%;
+        }
+        .tb th{
+            background-color: #0094ff;
+            color:white;
+        }
+
+        .tb td,.tb th{
+            padding:5px;
+            border:1px solid black;
+            text-align: center;
+        }
+
+        .add{
+            padding: 5px;
+            border:1px solid black;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script src="./vue2.js"></script>
+    <script src="./axios.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="add">
+          编号:<input type="text" v-model="newId" ref="inputRef">
+          品牌名称:<input type="text" v-model="newName" @keydown.enter="addData">
+          <input type="button" value="添加" @click="addData">
+      </div>
+      <div class="add">
+          品牌名称:<input type="text" placeholder="请输入搜索条件" v-model="seachVal">
+      </div>
+      <div>
+          <table class="tb">
+              <tr>
+                  <th>编号</th>
+                  <th>品牌名称</th>
+                  <th>创立时间</th>
+                  <th>操作</th>
+              </tr>
+              <tr v-for="(item,index) in list" :key="index">
+                <td>{{item.id}}</td>
+                <td>{{item.name}}</td>
+                <td>{{item.ctime | myfitime('-')}}</td>
+                <td><a href="javascript:;" @click="delDate(item.id)">删除</a>&nbsp;<a href="javascript:;">修改</a></td>
+              </tr>
+              <tr >
+                  <td colspan="4">没有品牌数据</td>
+              </tr>
+          <!-- 动态生成内容tr -->
+          </table>
+      </div>
+    </div>
+  </body>
+  <script>
+    // 创建全局时间过滤器  val表示过滤的数据, 类型是对象
+    Vue.filter("myfitime", (val, sep) => {
+      val = new Date(val)
+      var y = val.getFullYear()
+      var m = val.getMonth()+1
+      var d = val.getDate()
+      return d + sep + m + sep + d
+    })
+    var vm = new Vue({
+      el: '#app',
+      data: {
+        list: [],
+        newId: '',
+        newName: '',
+        seachVal: ''
+      },
+      methods: {
+        getDate(){
+        axios.get('http://157.122.54.189:9093/api/getprodlist')
+         .then(res => {
+           if (res.status === 200) {
+             console.log(res)
+             this.list = res.data.message
+           }
+         })
+        },
+        // 增加
+        addData(){
+          this.list.push({id: this.newId, name: this.newName, ctime: new Date()})
+          this.newId = ''
+          this.newName = ''
+        },
+        // 删除
+        delDate(id){
+          axios.get('http://157.122.54.189:9093/api/delproduct/'+id)
+           .then(res => {
+             if (res.status === 200) {
+               alert('删除数据成功')
+               this.getDate()
+             }
+           })
+        },
+        // 搜索
+
+      },
+      mounted () {
+        this.getDate()
+        this.$refs.inputRef.focus()
+      },
+    })
+  </script>
+</html>
